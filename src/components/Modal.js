@@ -18,13 +18,13 @@ const Modal = ({ children, onClose }) => {
     >
       <div className="bg-white shadow-lg w-full max-w-md p-6 overflow-auto">
         {children}
-        <button
+        {/* <button
           type="button"
           onClick={handleClose}
           className="text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 rounded-lg p-1.5"
         >
           Close
-        </button>
+        </button> */}
       </div>
     </div>
   );

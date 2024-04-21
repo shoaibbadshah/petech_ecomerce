@@ -1,24 +1,24 @@
 import React, { useRef, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Modal from "./Modal";
 import { addToCart } from "../redux/actions/cartAction";
-// import { addToCart } from '../actions/cartActions'; // Replace with your action import
 
 const ProductVariant = ({ product }) => {
   const dispatch = useDispatch();
-  const [selectedSize, setSelectedSize] = useState("");
-  const [quantity, setQuantity] = useState(1);
 
   const [showModal, setShowModal] = useState(false);
   const openModal = () => setShowModal(true);
   const closeModal = () => setShowModal(false);
 
-  const handleAddToCart = () => {
-    if (selectedSize && quantity > 0) {
-      dispatch(addToCart(product, selectedSize, quantity)); // Dispatch the action
-    }
+  const cartItem = useSelector((e) => e.cart?.cartItems);
+  console.log("🚀 ~ ProductVariant ~ cartItem:", cartItem);
 
-    openModal();
+  const handleAddToCart = async (prod, total_qnty, qntyInc, size) => {
+    if (total_qnty > 0) {
+      dispatch(addToCart(prod, size, qntyInc));
+
+      openModal();
+    }
   };
 
   const imageRef = useRef(null);
@@ -59,8 +59,8 @@ const ProductVariant = ({ product }) => {
         >
           <img
             ref={imageRef}
-            src={product.cover_image}
-            alt={product.title}
+            src={product?.cover_image}
+            alt={product?.title}
             className={` rounded-xl object-contain ${
               isHovered
                 ? "hover:scale-110 transition-transform duration-300 ease-in-out"
@@ -75,15 +75,25 @@ const ProductVariant = ({ product }) => {
           } hover:opacity-50`}
         >
           <div className="bg-black text-white h-12 flex justify-around items-center px-4">
-            {product?.variants?.map(({ quantity, size }) => {
-              return quantity === 0 ? (
+            {product?.variants?.map((variant) => {
+              return variant?.quantity === 0 ? (
                 <div className="relative">
-                  <span className="">{size}</span>
+                  <span className="">{variant?.size}</span>
                   <div className="w-[1px] bg-white h-11 rotate-45 absolute -top-2  left-1"></div>
                 </div>
               ) : (
-                <span className="" onClick={handleAddToCart}>
-                  {size}
+                <span
+                  className=""
+                  onClick={() =>
+                    handleAddToCart(
+                      product,
+                      variant?.quantity,
+                      1,
+                      variant?.size
+                    )
+                  }
+                >
+                  {variant?.size}
                 </span>
               );
             })}
@@ -94,26 +104,77 @@ const ProductVariant = ({ product }) => {
       <div className="p-4">
         <h4 className="">{product.title}</h4>
         <p className="font-semibold">{product.sale_price} AED</p>
-
-        <div className="flex items-center mb-4">
-          {product.variants.quantity === 0 && (
-            <span className="text-red-500 line-through">Out of Stock</span>
-          )}
-        </div>
       </div>
 
       <div>
-        {/* <button
-          onClick={openModal}
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        >
-          Open Modal
-        </button> */}
         {showModal && (
           <Modal onClose={closeModal}>
-            <div className="flex justify-between">
-              <p>1 Product add to you basked.</p>
-              <div onClick={() => setShowModal(!showModal)}>x</div>
+            <div className="flex justify-between items-center">
+              <p>
+                <span className="font-semibold"> {cartItem?.length}</span>{" "}
+                Product add to you basked.
+              </p>
+              <div
+                className="flex border border-gray-800 w-5 h-5 justify-center items-center pb-1 rounded-full"
+                onClick={() => setShowModal(!showModal)}
+              >
+                x
+              </div>
+            </div>
+
+            <div className="mt-9">
+              {cartItem.map((item) => {
+                console.log("🚀 ~ {cartItem.map ~ item:", item);
+                return (
+                  <div className="flex mt-5">
+                    <img
+                      src={item?.product?.cover_image}
+                      alt={item?.product?.title}
+                      className={` rounded-xl object-contain w-1/5`}
+                    />
+
+                    <div className="pl-5">
+                      <p>{item?.product?.title}</p>
+                      <p className="font-semibold">
+                        {item?.product?.sale_price}
+                      </p>
+                      <p className="border w-7 items-center justify-center flex">
+                        {item?.size}
+                      </p>
+
+                      <div className="flex  w-1/3 mt-2 justify-around border">
+                        <button
+                          onClick={() =>
+                            handleAddToCart(
+                              item?.product,
+                              item?.quantity,
+                              -1,
+                              item?.size
+                            )
+                          }
+                          className="font-semibold"
+                        >
+                          -
+                        </button>
+                        <p className="font-semibold">{item?.quantity}</p>
+                        <button
+                          onClick={() =>
+                            handleAddToCart(
+                              item?.product,
+                              item?.quantity,
+                              1,
+                              item?.size
+                            )
+                          }
+                          className="font-semibold"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </Modal>
         )}
