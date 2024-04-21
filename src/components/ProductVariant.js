@@ -1,5 +1,7 @@
 import React, { useRef, useState } from "react";
 import { useDispatch } from "react-redux";
+import Modal from "./Modal";
+import { addToCart } from "../redux/actions/cartAction";
 // import { addToCart } from '../actions/cartActions'; // Replace with your action import
 
 const ProductVariant = ({ product }) => {
@@ -7,10 +9,16 @@ const ProductVariant = ({ product }) => {
   const [selectedSize, setSelectedSize] = useState("");
   const [quantity, setQuantity] = useState(1);
 
+  const [showModal, setShowModal] = useState(false);
+  const openModal = () => setShowModal(true);
+  const closeModal = () => setShowModal(false);
+
   const handleAddToCart = () => {
     if (selectedSize && quantity > 0) {
-      // dispatch(addToCart({ ...product, size: selectedSize, quantity }));
+      dispatch(addToCart(product, selectedSize, quantity)); // Dispatch the action
     }
+
+    openModal();
   };
 
   const imageRef = useRef(null);
@@ -74,7 +82,9 @@ const ProductVariant = ({ product }) => {
                   <div className="w-[1px] bg-white h-11 rotate-45 absolute -top-2  left-1"></div>
                 </div>
               ) : (
-                <span className="">{size}</span>
+                <span className="" onClick={handleAddToCart}>
+                  {size}
+                </span>
               );
             })}
           </div>
@@ -90,6 +100,23 @@ const ProductVariant = ({ product }) => {
             <span className="text-red-500 line-through">Out of Stock</span>
           )}
         </div>
+      </div>
+
+      <div>
+        {/* <button
+          onClick={openModal}
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        >
+          Open Modal
+        </button> */}
+        {showModal && (
+          <Modal onClose={closeModal}>
+            <div className="flex justify-between">
+              <p>1 Product add to you basked.</p>
+              <div onClick={() => setShowModal(!showModal)}>x</div>
+            </div>
+          </Modal>
+        )}
       </div>
     </div>
   );
