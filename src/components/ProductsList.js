@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import ProductVariant from "./ProductVariant";
-// import axios from 'axios';
+import useFetch from "../hooks/useFetch";
 
 const DATA = {
   status: 200,
@@ -229,24 +229,38 @@ const DATA = {
 const ProductsList = () => {
   const [products, setProducts] = useState([]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // const response = await axios.get('https://store-api.cogeter.com/api/products?limit=30');
-        setProducts(DATA?.data);
-      } catch (error) {
-        console.error("Error fetching products:", error);
-        // Handle errors here, like displaying an error message to the user
-      }
-    };
+  const { data, loading, error } = useFetch(
+    "https://store-api.cogeter.com/api/products?limit=30"
+  );
 
-    fetchData();
-  }, []);
+  console.log("dmy", data);
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
+  if (error) {
+    return <p>Error: {error.message}</p>;
+  }
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       // const response = await axios.get('https://store-api.cogeter.com/api/products?limit=30');
+  //       //server down
+  //       setProducts(DATA?.data);
+  //     } catch (error) {
+  //       console.error("Error fetching products:", error);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, []);
 
   return (
     <div className="m-12 grid grid-cols-2 md:grid-cols-4 gap-4">
-      {products?.length > 0 &&
-        products?.map((product) => (
+      {data?.data?.length > 0 &&
+        data?.data?.map((product) => (
           <ProductVariant key={product.id} product={product} />
         ))}
     </div>
