@@ -4,6 +4,7 @@ import Modal from "./Modal";
 import { addToCart, removeFromCart } from "../redux/actions/cartAction";
 
 const ProductVariant = ({ product }) => {
+  console.log("🚀 ~ product:", product.variants);
   const dispatch = useDispatch();
 
   const [showModal, setShowModal] = useState(false);
@@ -61,6 +62,12 @@ const ProductVariant = ({ product }) => {
           }}
           onMouseMove={handleMouseMove}
         >
+          {product?.variants?.every((variant) => variant.quantity === 0) && (
+            <p className="absolute bg-black text-white text-xs px-1 left-1 top-1 z-50">
+              Sold out
+            </p>
+          )}
+
           <img
             ref={imageRef}
             src={product?.cover_image}
