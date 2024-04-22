@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Modal from "./Modal";
-import { addToCart } from "../redux/actions/cartAction";
+import { addToCart, removeFromCart } from "../redux/actions/cartAction";
 
 const ProductVariant = ({ product }) => {
   const dispatch = useDispatch();
@@ -19,6 +19,10 @@ const ProductVariant = ({ product }) => {
 
       openModal();
     }
+  };
+
+  const removeCartItem = (id) => {
+    dispatch(removeFromCart(id));
   };
 
   const imageRef = useRef(null);
@@ -123,54 +127,63 @@ const ProductVariant = ({ product }) => {
             </div>
 
             <div className="mt-9">
-              {cartItem.map((item) => {
+              {cartItem?.map((item) => {
                 console.log("🚀 ~ {cartItem.map ~ item:", item);
                 return (
-                  <div className="flex mt-5">
-                    <img
-                      src={item?.product?.cover_image}
-                      alt={item?.product?.title}
-                      className={` rounded-xl object-contain w-1/5`}
-                    />
+                  <div className="grid grid-cols-1 mt-5">
+                    <div className="flex">
+                      <img
+                        src={item?.product?.cover_image}
+                        alt={item?.product?.title}
+                        className={` rounded-xl object-contain w-1/5`}
+                      />
 
-                    <div className="pl-5">
-                      <p>{item?.product?.title}</p>
-                      <p className="font-semibold">
-                        {item?.product?.sale_price}
-                      </p>
-                      <p className="border w-7 items-center justify-center flex">
-                        {item?.size}
-                      </p>
+                      <div className="pl-5">
+                        <p>{item?.product?.title}</p>
+                        <p className="font-semibold">
+                          {item?.product?.sale_price}
+                        </p>
+                        <p className="border w-7 items-center justify-center flex">
+                          {item?.size}
+                        </p>
 
-                      <div className="flex  w-1/3 mt-2 justify-around border">
-                        <button
-                          onClick={() =>
-                            handleAddToCart(
-                              item?.product,
-                              item?.quantity,
-                              -1,
-                              item?.size
-                            )
-                          }
-                          className="font-semibold"
-                        >
-                          -
-                        </button>
-                        <p className="font-semibold">{item?.quantity}</p>
-                        <button
-                          onClick={() =>
-                            handleAddToCart(
-                              item?.product,
-                              item?.quantity,
-                              1,
-                              item?.size
-                            )
-                          }
-                          className="font-semibold"
-                        >
-                          +
-                        </button>
+                        <div className="flex  w-1/3 mt-2 justify-around border">
+                          <button
+                            onClick={() =>
+                              // handleAddToCart(
+                              //   item?.product,
+                              //   item?.quantity,
+                              //   -1,
+                              //   item?.size
+                              // )
+
+                              removeCartItem(item?.product?.id)
+                            }
+                            className="font-semibold"
+                          >
+                            -
+                          </button>
+                          <p className="font-semibold">{item?.quantity}</p>
+                          <button
+                            onClick={() =>
+                              handleAddToCart(
+                                item?.product,
+                                item?.quantity,
+                                1,
+                                item?.size
+                              )
+                            }
+                            className="font-semibold"
+                          >
+                            +
+                          </button>
+                        </div>
                       </div>
+                    </div>
+
+                    <div className="">
+                      <p>Sub Total</p>
+                      <p>AED</p>
                     </div>
                   </div>
                 );
